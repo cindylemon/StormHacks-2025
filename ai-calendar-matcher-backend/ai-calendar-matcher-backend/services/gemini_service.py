@@ -29,11 +29,11 @@ SCHEMA = {
   }
 }
 
-def _prompt(location, group_size, budget, preferences, free_windows):
+def _prompt(location, preferences, free_windows): # group size added later?
     return (
         "You are a group activity planner.\n"
         "Return ONLY JSON matching the schema. One suggestion per free window.\n"
-        f"Location: {location}\nGroup size: {group_size}\nBudget: {budget}\n"
+        f"Location: {location}\n"#Group size: {group_size}\nBudget: {budget}\n"
         f"Preferences: {preferences}\nFree windows: {free_windows}\n"
     )
 
