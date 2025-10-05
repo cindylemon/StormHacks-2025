@@ -1,19 +1,16 @@
-# ai_routes.py
-from typing import List, Literal
+from typing import List
 from fastapi import APIRouter
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from services.gemini_service import generate_suggestions
 
 router = APIRouter(prefix="/ai", tags=["ai"])
 
 class FreeWindow(BaseModel):
-    start: str
+    start: str  # ISO 8601 with timezone, e.g. "2025-10-05T14:00:00-07:00"
     end: str
 
 class SuggestionIn(BaseModel):
     location: str
-    groupSize: int = Field(..., ge=1)
-    budget: Literal["low","medium","high"] = "medium"
     preferences: List[str] = []
     freeWindows: List[FreeWindow] = []
 
@@ -21,8 +18,6 @@ class SuggestionIn(BaseModel):
 def suggest(body: SuggestionIn):
     return generate_suggestions(
         location=body.location,
-        group_size=body.groupSize,
-        budget=body.budget,
         preferences=body.preferences,
         free_windows=[w.model_dump() for w in body.freeWindows],
     )
