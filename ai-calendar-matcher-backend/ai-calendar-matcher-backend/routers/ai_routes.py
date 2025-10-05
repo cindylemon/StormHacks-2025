@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from services.gemini_service import generate_suggestions
 router = APIRouter(tags=["ai"]) 
@@ -20,8 +20,11 @@ def ping():
 
 @router.post("/suggest")
 def suggest(body: SuggestionIn):
-    return generate_suggestions(
-        location=body.location,
-        preferences=body.preferences,
-        free_windows=[w.model_dump() for w in body.freeWindows],
-    )
+    try:
+        return generate_suggestions(
+            location=body.location,
+            preferences=body.preferences,
+            free_windows=[{"start": w.start, "end": w.end} for w in body.freeWindows],
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
