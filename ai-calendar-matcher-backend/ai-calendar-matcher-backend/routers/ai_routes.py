@@ -2,8 +2,7 @@ from typing import List
 from fastapi import APIRouter
 from pydantic import BaseModel
 from services.gemini_service import generate_suggestions
-
-router = APIRouter(prefix="/ai", tags=["ai"])
+router = APIRouter(tags=["ai"]) 
 
 class FreeWindow(BaseModel):
     start: str  # ISO 8601 with timezone, e.g. "2025-10-05T14:00:00-07:00"
@@ -13,6 +12,11 @@ class SuggestionIn(BaseModel):
     location: str
     preferences: List[str] = []
     freeWindows: List[FreeWindow] = []
+
+# makes sure our servers are mounted
+@router.get("/ping")
+def ping():
+    return {"ok": True}
 
 @router.post("/suggest")
 def suggest(body: SuggestionIn):

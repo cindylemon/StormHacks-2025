@@ -17,6 +17,8 @@ CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 app = FastAPI()
 app.include_router(auth_router)
 
+from routers.ai_routes import router as ai_router
+app.include_router(ai_router, prefix="/ai")
 
 # ------------------------
 # Calendar helper functions
@@ -135,3 +137,12 @@ def shared_free_time(
         return {"error": str(e)}
     except Exception as e:
         return {"error": str(e)}
+    
+
+@app.get("/env-health")
+def env_health():
+    return {
+        "has_gemini_key": bool(os.getenv("GEMINI_API_KEY")),
+        "has_google_client": bool(os.getenv("GOOGLE_CLIENT_ID")),
+        "redirect_uri": os.getenv("GOOGLE_REDIRECT_URI"),
+    }
