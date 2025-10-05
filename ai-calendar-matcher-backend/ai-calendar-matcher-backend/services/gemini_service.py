@@ -29,16 +29,19 @@ SCHEMA = {
   }
 }
 
-def _prompt(location, preferences, free_windows): # group size added later?
+
+def _prompt(location: str, preferences: List[str], free_windows: List[dict]) -> str:
     return (
         "You are a group activity planner.\n"
         "Return ONLY JSON matching the schema. One suggestion per free window.\n"
-        f"Location: {location}\n"#Group size: {group_size}\nBudget: {budget}\n"
-        f"Preferences: {preferences}\nFree windows: {free_windows}\n"
+        f"Location: {location}\n"
+        f"Preferences: {preferences}\n"
+        f"Free windows (ISO): {free_windows}\n"
     )
 
-def generate_suggestions(*, location: str, group_size: int, budget: str,
-                         preferences: List[str], free_windows: List[dict]) -> List[dict]:
+def generate_suggestions(*, location: str,
+                         preferences: List[str],
+                         free_windows: List[dict]) -> List[dict]:
     model = genai.GenerativeModel(
         MODEL,
         generation_config={
@@ -46,9 +49,7 @@ def generate_suggestions(*, location: str, group_size: int, budget: str,
             "response_schema": SCHEMA,
         },
     )
-    resp = model.generate_content(
-        _prompt(location, group_size, budget, preferences, free_windows)
-    )
+    resp = model.generate_content(_prompt(location, preferences, free_windows))
     try:
         return json.loads(resp.text)
     except Exception:
